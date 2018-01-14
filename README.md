@@ -32,7 +32,19 @@ Install composer (see https://getcomposer.org/download/ for newer instructions):
     mv composer.phar /usr/local/bin/composer
     composer install
 
-Install dBase library (see instructions at https://github.com/mote0230/dbase-pecl-php7)
+If you want to use the DBF-file output you must install the dBase library (see instructions at https://github.com/mote0230/dbase-pecl-php7).
+After compiling the `dbase.so` on your system you will find it in `/usr/lib/php/20151012`
+
+    sudo nano /etc/php/7.0/mods-available/dbase.ini
+  add
+  
+    extension=dbase.so
+  save file
+  
+    sudo ln -s /etc/php/7.0/mods-available/dbase.ini /etc/php/7.0/fpm/conf.d/20-dbase.ini
+    sudo ln -s /etc/php/7.0/mods-available/dbase.ini /etc/php/7.0/cli/conf.d/20-dbase.ini
+    cd /etc/init.d
+    service apache2 restart
 
 Edit `config.example.php` and save as `config.php` or use an other name of your choice (but than keep in mind to use the -c option to define your renamed file)
 
