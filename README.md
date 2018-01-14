@@ -20,7 +20,7 @@ This is an extendeded version of https://github.com/andig/carddav2fb. Changes ar
 Install carddav2fb:
 
     cd /
-    git clone https://github.com/andig/carddav2fb.git
+    git clone https://github.com/BlackSenator/carddav2fb_XR.git
     cd carddav2fb
     
 Install composer (see https://getcomposer.org/download/ for newer instructions):
