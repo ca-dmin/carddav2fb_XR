@@ -34,7 +34,7 @@ Install composer (see https://getcomposer.org/download/ for newer instructions):
 
 Install dBase library (see instructions at https://github.com/mote0230/dbase-pecl-php7)
 
-Edit `config.example.php` and save as `config.php`
+Edit `config.example.php` and save as `config.php` or use an other name of your choice (but than keep in mind to use the -c option to define your renamed file)
 
 ## Usage
 
