@@ -9,12 +9,12 @@ $config = [
 
 	// or server
 	'server' => [
-		0 => [
+		[
 			'url' => 'https://...',
 			'user' => '',
 			'password' => '',
 			],								/* add as many as you need
-		1 => [
+		[
 			'url' => 'https://...',
 			'user' => '',
 			'password' => '',
