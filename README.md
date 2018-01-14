@@ -33,7 +33,18 @@ Install composer (see https://getcomposer.org/download/ for newer instructions):
     composer install
 
 If you want to use the DBF-file output you must install the dBase library (see instructions at https://github.com/mote0230/dbase-pecl-php7).
-After compiling the `dbase.so` on your system you will find it in `/usr/lib/php/20151012`
+
+    sudo apt-get install php7.0-dev
+    git clone git://github.com/mote0230/dbase-pecl-php7.git ~/php7-dbase
+    cd php7-dbase/
+    phpize
+    ./configure
+    make
+    sudo make install
+    cd ~
+    rm -rf ~/php7-dbase
+
+  After compiling the `dbase.so` on your system you will find it in `/usr/lib/php/20151012` and needs to be linked to your php installation:
 
     sudo nano /etc/php/7.0/mods-available/dbase.ini
   add
@@ -45,6 +56,7 @@ After compiling the `dbase.so` on your system you will find it in `/usr/lib/php/
     sudo ln -s /etc/php/7.0/mods-available/dbase.ini /etc/php/7.0/cli/conf.d/20-dbase.ini
     cd /etc/init.d
     service apache2 restart
+
 
 Edit `config.example.php` and save as `config.php` or use an other name of your choice (but than keep in mind to use the -c option to define your renamed file)
 
