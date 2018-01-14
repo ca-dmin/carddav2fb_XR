@@ -1,6 +1,6 @@
 # CardDAV contacts import for AVM FRITZ!Box
 
-Purpose of the software is the (automatic) uploading of contact data from CardDAV servers as a phone book in an AVM Fritz! Box.
+Purpose of the software is the (automatic) uploading of contact data from CardDAV servers as a phone book into an AVM Fritz! Box.
 
 This is an extendeded version of https://github.com/andig/carddav2fb. Changes are:
 
