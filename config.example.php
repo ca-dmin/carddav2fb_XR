@@ -24,8 +24,8 @@ $config = [
 		
 	// or fritzbox
 	'fritzbox' => [
-		'url' => '192.168.178.1',
-		'user' => '',
+		'url' => 'fritz.box',               // or change it to your routers IP address
+		'user' => 'dslf-config',            // default user; change name if you are using a dedicated user 
 		'password' => '',
 	],
 
