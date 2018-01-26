@@ -71,10 +71,8 @@ class Converter
 						$number = strtr($number, $replaceCharacters);
 						$number = trim(preg_replace('/\s+/','', $number));
 					}
-
                     $phone = $telephony->addChild('number', $number);
                     $phone->addAttribute('id', $idx);
-
                     $type = 'other';
 
                     foreach ($phoneTypes as $type => $value) {
@@ -87,14 +85,12 @@ class Converter
                         }
 					}
 				}
-	
 					
                 $phone->addAttribute('type', $type);
 
                 if (strpos($numberType, 'pref') !== false) {
                     $phone->addAttribute('prio', 1);
 					}
-
                     // $phone->addAttribute('vanity', '');
             }
         }

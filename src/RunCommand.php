@@ -13,9 +13,9 @@ use Symfony\Component\Console\Helper\ProgressBar;
 
 class RunCommand extends Command
 {
-	use ConfigTrait;
-	
-	
+    use ConfigTrait;
+    
+    
     protected function configure()
     {
         $this->setName('run')
@@ -27,25 +27,24 @@ class RunCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-		
-		$this->loadConfig($input);
+        
+        $this->loadConfig($input);
 
-		$vcards = array();
-		$xcards = array();
-		
-		foreach($this->config['server'] as $server) {
-			$progress = new ProgressBar($output);
-			error_log("Downloading vCard(s) from account ".$server['user']);
-			$backend = backendProvider($server);
-		    $progress->start();
-			$xcards = download($backend, function () use ($progress) {
-						$progress->advance();
-					}
-				);
-			$progress->finish();
-			$vcards = array_merge($vcards,$xcards);
-			error_log(sprintf("\nDownloaded %d vCard(s)", count($vcards)));
-	 	}
+        $vcards = array();
+        $xcards = array();
+        
+        foreach ($this->config['server'] as $server) {
+            $progress = new ProgressBar($output);
+            error_log("Downloading vCard(s) from account ".$server['user']);
+            $backend = backendProvider($server);
+            $progress->start();
+            $xcards = download($backend, function () use ($progress) {
+                        $progress->advance();
+            });
+            $progress->finish();
+            $vcards = array_merge($vcards, $xcards);
+            error_log(sprintf("\nDownloaded %d vCard(s)", count($vcards)));
+         }
 
         // parse and convert
         error_log("Parsing vCards");
@@ -66,21 +65,21 @@ class RunCommand extends Command
 
         // conversion
         $filters = $this->config['filters'];
-				
+                
         $filtered = filter($cards, $filters);
 
         error_log(sprintf("Converted %d vCard(s)", count($filtered)));
-		
+        
         // fritzbox format
         $phonebook = $this->config['phonebook'];
         $conversions = $this->config['conversions'];
-		$xml = export($phonebook['name'], $filtered, $conversions);
+        $xml = export($phonebook['name'], $filtered, $conversions);
 
-		// FRITZadr dBase Ausgabe
-		IF (!empty($this->config['fritzadrpath'][0])) {
-			exportfa($filtered, $conversions, $this->config['fritzadrpath'][0]);
-		}
-		
+        // FRITZadr dBase Ausgabe
+        IF (!empty($this->config['fritzadrpath'][0])) {
+            exportfa($filtered, $conversions, $this->config['fritzadrpath'][0]);
+        }
+        
         // upload
         error_log("Uploading");
 

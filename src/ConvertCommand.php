@@ -18,7 +18,7 @@ class ConvertCommand extends Command
     protected function configure()
     {
         $this->setName('convert')
-            ->setDescription('Convert Vcard to FritzBox format')
+            ->setDescription('Convert vCard(s) to Fritz!Box format')
             ->addOption('raw', 'r', InputOption::VALUE_REQUIRED, 'export raw conversion result to json file')
             ->addArgument('filename', InputArgument::REQUIRED, 'filename');
 
@@ -52,8 +52,8 @@ class ConvertCommand extends Command
 		IF (!empty($FritzAdrPath)) {
 			$FAData = exportfa($filtered, $conversions, $FritzAdrPath);
 			Echo $FAData;
-		}
-		
+		}	
+
         echo $xml->asXML();
     }
 }
