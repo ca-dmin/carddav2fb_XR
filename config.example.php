@@ -25,7 +25,7 @@ $config = [
 	// or fritzbox
 	'fritzbox' => [
 		'url' => 'fritz.box',               // or change it to your routers IP address
-		'user' => 'dslf-config',            // default user; change name if you are using a dedicated user 
+		'user' => 'dslf-config',            // default user; change name if you are using a dedicated user
 		'password' => '',
 	],
 
@@ -71,8 +71,8 @@ $config = [
 			'WORK' => 'work',
 			'HOME' => 'home'
 		],
-		'phoneReplaceCharacters' => [
-            '+491'	=> '01',
+		'phoneReplaceCharacters' => [      // are processed consecutively. Order decides!
+            '+491'	=> '01',               // domestic numbers without country code
             '+492'  => '02',
             '+493'  => '03',
             '+494'  => '04',
@@ -91,11 +91,11 @@ $config = [
             '+49 8'	=> '08',
             '+49 9'	=> '09',
 			'+49'	=> '',
-            '('		=> '',
+            '('		=> '',                   // delete separators
             ')'		=> '',
 			'/'		=> '',
 			'-'		=> '',
-			'+'		=> '00'
+			'+'		=> '00'                  // normalize foreign numbers 
 		]	
 	]
 ];
