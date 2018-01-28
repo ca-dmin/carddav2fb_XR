@@ -4,7 +4,7 @@ Purpose of the software is the (automatic) uploading of contact data from CardDA
 
 This is an extendeded version of https://github.com/andig/carddav2fb. That particular solution is a complete new coded version of a 4 - 5 year old solution. E.g. it can handle iCloud groups as well as categories as selection parameters for include or exclude. So if you´ve grouped or categorized you´re contacts, you´re able to transfer decidedly the desired contacts.  
 
-My Changes to andigs version are:
+My changes or additions to andigs version are:
 
   * the phone book can be built from more than one source (now also included in andig´s solution)
   * FAX numbers of selected contacts can be written as FritzAdr.dbf file for Fritz!FAX (fax4box)
