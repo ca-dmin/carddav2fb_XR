@@ -6,7 +6,6 @@ use Andig\CardDav\Backend;
 use Andig\Vcard\Parser;
 use Andig\FritzBox\Api;
 use Andig\FritzBox\Converter;
-use Andig\FritzBox\Download;
 use Andig\FritzAdr\converter2fa;
 use Andig\FritzAdr\fritzadr;
 use \SimpleXMLElement;
@@ -197,38 +196,27 @@ EOT
     return $xml;
 }
 
-function exportFA(array $cards, array $conversions,string $dblocation) {
+function exportFA($xml, string $dblocation) { 
     
-    $converter2fa = new converter2fa($conversions);
+	$convert2fa = new converter2fa();
     $DB3 = new fritzadr;                                            // Instanz von fritzadr erzeugen                                                // Achtung -> in config mit aufnehmen!
-    $FritzAdrRecord = array ();
     
     IF ($DB3->CreateFritzAdr($dblocation)) {                        // Versuche die dBase-Datei zu erzeugen
-        $converter2fa->NumDataFields = $DB3->NumAttributes;         // Anzahl der Datenfelder übergeben
         $DB3->OpenFritzAdr();                                       // wenn erfolgreich dann öffne die dBase-Datei
-        foreach ($cards as $card) {    
-            $converter2fa->convertfa($card);                        // extrahiere FAX-Daten in den public array der class
-        }
-        IF (count ($converter2fa->FritzAdrRecords)) {               // wenn der public array der class gefüllt ist
-
-            foreach ($converter2fa->FritzAdrRecords as $key => $row) {    // Sortierung Aufsteigend nach Name und Nummer
-                $BEZCHN[$key]  = $row[0];
-                IF ($DB3->NumAttributes == 19) {
-                    $TELEFAX[$key] = $row[11];
-                }
-                IF ($DB3->NumAttributes == 21) {
-                    $TELEFAX[$key] = $row[10];
-                }
-            }
-            array_multisort($BEZCHN, SORT_ASC, $TELEFAX, SORT_ASC, $converter2fa->FritzAdrRecords);
-
-            foreach ($converter2fa->FritzAdrRecords as $FritzAdrRecord) {    // zerlege ihn in der FritzAdr array
-                $DB3->AddRecordFritzAdr($FritzAdrRecord);             // und schreibe ihn als Datensatz in die dBase-Datei
+        $FritzAdrRecords = $convert2fa->convert($xml, $DB3->NumAttributes);
+		$numconv = count($FritzAdrRecords);
+		IF ($numconv > 0) {
+		    foreach ($FritzAdrRecords as $FritzAdrRecord) {         // zerlege  FritzAdr array
+                $DB3->AddRecordFritzAdr($FritzAdrRecord);           // und schreibe ihn als Datensatz in die dBase-Datei
             }
         }
-        $DB3->CloseFritzAdr();                                        // schließe die dBase-Datei
-        return $converter2fa->FritzAdrRecords;                        // mgl. Ausgabe für command convert
-    }   
+		$numupload = $DB3->CountRecordFritzAdr();
+		IF ($numupload <> $numconv) {
+		    throw new \Exception('Upload to dBase File failed!');
+		}
+        $DB3->CloseFritzAdr();                                      // schließe die dBase-Datei
+    return $numupload;
+	}
 }
 
 

@@ -34,6 +34,7 @@ class Api
         $this->password = $password;
 
         $this->sid = $this->initSID();
+		
     }
 
     /**
@@ -42,7 +43,7 @@ class Api
      *
      * @param  array  $formfields    an associative array with the POST fields to pass
      * @return string                the raw HTML code returned by the Fritz!Box
-     */
+     
     public function doPostForm($formfields = array())
     {
         $ch = curl_init();
@@ -63,7 +64,7 @@ class Api
         $output = curl_exec($ch);
         curl_close($ch);
         return $output;
-    }
+    }   */
 
     public function doPostFile($formfields = array(), $filefileds = array())
     {

@@ -74,18 +74,20 @@ class RunCommand extends Command
         $phonebook = $this->config['phonebook'];
         $conversions = $this->config['conversions'];
         $xml = export($phonebook['name'], $filtered, $conversions);
-
+        
         // FRITZadr dBase Ausgabe
         IF (!empty($this->config['fritzadrpath'][0])) {
-            exportfa($filtered, $conversions, $this->config['fritzadrpath'][0]);
+			$nc = exportfa($xml, $this->config['fritzadrpath'][0]);
+			error_log(sprintf("Converted %d FAX number(s) in FritzAdr.dbf", $nc));
         }
         
         // upload
         error_log("Uploading");
 
         $xmlStr = $xml->asXML();
-
+		
         $fritzbox = $this->config['fritzbox'];
+
         upload($xmlStr, $fritzbox['url'], $fritzbox['user'], $fritzbox['password'], $phonebook['id']);
 
         error_log("Uploaded Fritz!Box phonebook");
