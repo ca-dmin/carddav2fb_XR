@@ -1,6 +1,11 @@
 <?php
 
+namespace Andig\FritzAdr;
+
 /*
+Adaptierter Clone der Converter.php von andig.
+Eine Variante mit "class converter2fa extends Converter"
+hat nicht funktioniert.
 Diese Klasse stellt eine weitere Funktionen zur Verfügung,
 um Fax-Nummern zu extrahieren und in einem simplen Array
 mit 19 bzw. 21 Feldern* - passend zu FritzAdr - zu übergeben:
@@ -14,8 +19,6 @@ mit 19 bzw. 21 Feldern* - passend zu FritzAdr - zu übergeben:
 
 Author: Volker Püschel
 */
-
-namespace andig\FritzAdr;
 
 class converter2fa
 

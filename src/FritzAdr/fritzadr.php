@@ -1,5 +1,7 @@
 <?php
 
+namespace Andig\FritzAdr;
+
 /*
 Die Klasse stellt Funktionen zur Verfügung, um die Adressdatenbank FRITZ!adr
 von AVM zu manipulieren. FRITZ!adr ist ein Adress- und Telefonbuch für die
@@ -21,8 +23,6 @@ Letztlich funktioniert hat bei mir die 21er.
 
 Author: Volker Püschel
 */
-
-namespace Andig\FritzAdr;
 
 class fritzadr
 {

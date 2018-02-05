@@ -4,11 +4,14 @@ namespace Andig;
 
 use Andig\CardDav\Backend;
 use Andig\Vcard\Parser;
+use Andig\Vcard\mk_vCard;
 use Andig\FritzBox\Api;
 use Andig\FritzBox\Converter;
 use Andig\FritzAdr\converter2fa;
 use Andig\FritzAdr\fritzadr;
+use Andig\ReplyMail\replymail;
 use \SimpleXMLElement;
+
 
 function backendProvider(array $config): Backend
 {
@@ -196,27 +199,94 @@ EOT
     return $xml;
 }
 
+
+function getSOAPclient($fb_ip = 'fritz.box', $user = 'dslf_config', $password = false) {
+    
+        $client = new \SoapClient(
+            null,
+            array(
+                'location'   => "http://".$fb_ip.":49000/upnp/control/x_contact",
+                'uri'        => "urn:dslforum-org:service:X_AVM-DE_OnTel:1",
+                'noroot'     => true,
+                'login'      => $user,
+                'password'   => $password,
+                'trace'      => true,
+                'exceptions' => true
+            )
+        );
+    return $client;
+}
+
+
 function exportFA($xml, string $dblocation) { 
     
-	$convert2fa = new converter2fa();
+    $convert2fa = new converter2fa();
     $DB3 = new fritzadr;                                            // Instanz von fritzadr erzeugen                                                // Achtung -> in config mit aufnehmen!
     
     IF ($DB3->CreateFritzAdr($dblocation)) {                        // Versuche die dBase-Datei zu erzeugen
         $DB3->OpenFritzAdr();                                       // wenn erfolgreich dann öffne die dBase-Datei
         $FritzAdrRecords = $convert2fa->convert($xml, $DB3->NumAttributes);
-		$numconv = count($FritzAdrRecords);
-		IF ($numconv > 0) {
-		    foreach ($FritzAdrRecords as $FritzAdrRecord) {         // zerlege  FritzAdr array
+        $numconv = count($FritzAdrRecords);
+        IF ($numconv > 0) {
+            foreach ($FritzAdrRecords as $FritzAdrRecord) {         // zerlege  FritzAdr array
                 $DB3->AddRecordFritzAdr($FritzAdrRecord);           // und schreibe ihn als Datensatz in die dBase-Datei
             }
         }
-		$numupload = $DB3->CountRecordFritzAdr();
-		IF ($numupload <> $numconv) {
-		    throw new \Exception('Upload to dBase File failed!');
-		}
+        $numupload = $DB3->CountRecordFritzAdr();
+        IF ($numupload <> $numconv) {
+            throw new \Exception('Upload to dBase File failed!');
+        }
         $DB3->CloseFritzAdr();                                      // schließe die dBase-Datei
     return $numupload;
-	}
+    }
+}
+
+
+function checkupdates ($xml_up, $config) {
+    
+    // values from config for recursiv vCard assembling
+    $Fritzbox  = $config['fritzbox'];
+    $Phonebook = $config['phonebook'];
+    $Reply     = $config['reply'];
+    
+    // set instance    
+    $vCard = new mk_vCard ();
+    $email = new replymail ($Reply);
+    
+    // initialize return value
+    $i = 0;
+    
+    // download phonebook from fritzbox
+    $client = getSoapClient($Fritzbox['url'], $Fritzbox['user'], $Fritzbox['password']);
+    $result = $client->GetPhonebook(new \SoapParam($Phonebook['id'],"NewPhonebookID"));
+    $xml_down = simplexml_load_file($result['NewPhonebookURL']);
+    
+    // check if entries are not included in the intended upload
+    foreach ($xml_down->phonebook->contact as $contact) {
+        foreach ($contact->telephony->number as $number) {
+            
+            $querynumber = (string)$number;
+            $name  = $contact->person->realName;
+            $type  = (string)$number['type'];
+            $email = (string)$contact->services->email;
+            $vip   = $contact->category; 
+
+            IF (strpos($querynumber, '**') === false) {                        // skip internal numbers
+                $querystr = '//telephony[number = "' .  $querynumber . '"]';   // assemble search string
+                IF (!$DataObjects = $xml_up->xpath($querystr)) {               // not found in upload = new entry! 
+                    // assemble vCard from new entry
+                    $newvCard = $vCard->createVCard ($querynumber, $name, $type, $email, $vip);  
+                    $filename = $name . '.vcf';
+                    // send new entry as vCard to designated reply adress
+                    IF ($email->sendReply ($Phonebook['name'], $newvCard, $filename) == true) {    
+                        $i++;
+                    //    break 2;    // DEBUG - just send 1 email for tests purposes
+                    }
+                }
+            }
+        }
+    }
+    return $i;
 }
 
 
@@ -229,12 +299,14 @@ function xml_adopt(SimpleXMLElement $to, SimpleXMLElement $from)
 }
 
 
-function upload(string $xml, string $url, string $user, string $password, int $phonebook=0)
-{
-    $fritz = new Api($url, $user, $password, 1);
+function upload(string $xml, $config) {
+    
+    $fritzbox = $config['fritzbox'];
+    
+    $fritz = new Api($fritzbox['url'], $fritzbox['user'], $fritzbox['password']); //, 1);
 
     $formfields = array(
-        'PhonebookId' => $phonebook
+        'PhonebookId' => $config['phonebook']['id']
     );
 
     $filefields = array(

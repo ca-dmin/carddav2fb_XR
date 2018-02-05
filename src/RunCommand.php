@@ -1,7 +1,7 @@
 <?php
 
 namespace Andig;
-
+  
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputArgument;
@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
-
 
 class RunCommand extends Command
 {
@@ -80,16 +79,21 @@ class RunCommand extends Command
 			$nc = exportfa($xml, $this->config['fritzadrpath'][0]);
 			error_log(sprintf("Converted %d FAX number(s) in FritzAdr.dbf", $nc));
         }
-        
-        // upload
+ 
+		// check for newer contacts in phonebook
+	    error_log("Checking for new entries");
+		$i = checkupdates ($xml, $this->config);
+	    IF ($i > 0) {
+			error_log(sprintf("Saved %d new contact(s) from Fritz!Box phonebook", $i));
+		}
+		
+	    // upload
         error_log("Uploading");
 
         $xmlStr = $xml->asXML();
-		
-        $fritzbox = $this->config['fritzbox'];
 
-        upload($xmlStr, $fritzbox['url'], $fritzbox['user'], $fritzbox['password'], $phonebook['id']);
+        upload($xmlStr, $this->config);
 
-        error_log("Uploaded Fritz!Box phonebook");
+        error_log("Uploaded new Fritz!Box phonebook");
     }  
 }

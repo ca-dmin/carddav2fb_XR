@@ -23,7 +23,7 @@ class Api
      *
      * @access public
      */
-    public function __construct($url = 'https://fritz.box', $user_name = false, $password = false, $force_local_login = false)
+    public function __construct($url = 'https://fritz.box', $user_name = false, $password = false) //, $force_local_login = false)
     {
         // init the config object
         // $this->config = new Config();
