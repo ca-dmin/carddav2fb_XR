@@ -6,14 +6,15 @@ This is an extendeded version of https://github.com/andig/carddav2fb. That parti
 
 My changes or additions to andigs version are:
 
-  * the phone book can be built from more than one source (now also included in andig´s solution)
+  * the phone book can be built from more than one source
+  * befor upload (overwriting) the phonebook there is a check of newer data on the Fritz!Box. If so, you will receive an email with the vcf-file of this contact
   * FAX numbers of selected contacts can be written as FritzAdr.dbf file for Fritz!FAX (fax4box)
   * the parser file has been added to include nicknames (now also included in andig´s solution)
   * the config example file was supplemented with recommendable default values (now also included in andig´s solution)
 
 ## Requirements
 
-  * PHP 7.0 (`apt-get install php7.0 php7.0-cli php7.0-curl php7.0-mbstring php7.0-xml`)
+  * PHP 7.0 (`apt-get install php7.0 php7.0-cli php7.0-curl php7.0-mbstring php7.0-soap php7.0-xml`)
   * Composer (follow the installation guide at https://getcomposer.org/download/)
   * if you want to write a FritzAdr.dbf: dBase library for php 7.0
 
