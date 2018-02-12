@@ -250,8 +250,8 @@ function checkupdates ($xml_up, $config) {
     $Reply     = $config['reply'];
     
     // set instance    
-    $vCard = new mk_vCard ();
-    $email = new replymail ($Reply);
+    $vCard   = new mk_vCard ();
+    $emailer = new replymail ($Reply);
     
     // initialize return value
     $i = 0;
@@ -278,7 +278,7 @@ function checkupdates ($xml_up, $config) {
                     $newvCard = $vCard->createVCard ($querynumber, $name, $type, $email, $vip);  
                     $filename = $name . '.vcf';
                     // send new entry as vCard to designated reply adress
-                    IF ($email->sendReply ($Phonebook['name'], $newvCard, $filename) == true) {    
+                    IF ($emailer->sendReply ($Phonebook['name'], $newvCard, $filename) == true) {    
                         $i++;
                     //    break 2;    // DEBUG - just send 1 email for tests purposes
                     }
