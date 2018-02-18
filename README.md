@@ -24,6 +24,7 @@ Install carddav2fb:
 
     cd /
     git clone https://github.com/BlackSenator/carddav2fb_XR.git
+    sudo mv carddav2fb_XR carddav2fb
     cd carddav2fb
     
 Install composer (see https://getcomposer.org/download/ for newer instructions):
