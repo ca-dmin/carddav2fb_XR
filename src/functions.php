@@ -253,6 +253,9 @@ function checkupdates ($xml_up, $config) {
     $vCard   = new mk_vCard ();
     $emailer = new replymail ($Reply);
     
+	// set container variable
+	$numbers = array ();
+	
     // initialize return value
     $i = 0;
     
@@ -260,31 +263,37 @@ function checkupdates ($xml_up, $config) {
     $client = getSoapClient($Fritzbox['url'], $Fritzbox['user'], $Fritzbox['password']);
     $result = $client->GetPhonebook(new \SoapParam($Phonebook['id'],"NewPhonebookID"));
     $xml_down = simplexml_load_file($result['NewPhonebookURL']);
-    
+	
     // check if entries are not included in the intended upload
     foreach ($xml_down->phonebook->contact as $contact) {
+		$x = -1;
+		$numbers = array ();                                                   // container for n-1 new numbers per contact
+		
         foreach ($contact->telephony->number as $number) {
-            
             $querynumber = (string)$number;
-            $name  = $contact->person->realName;
-            $type  = (string)$number['type'];
-            $email = (string)$contact->services->email;
-            $vip   = $contact->category; 
-
             IF (strpos($querynumber, '**') === false) {                        // skip internal numbers
                 $querystr = '//telephony[number = "' .  $querynumber . '"]';   // assemble search string
                 IF (!$DataObjects = $xml_up->xpath($querystr)) {               // not found in upload = new entry! 
-                    // assemble vCard from new entry
-                    $newvCard = $vCard->createVCard ($querynumber, $name, $type, $email, $vip);  
-                    $filename = $name . '.vcf';
-                    // send new entry as vCard to designated reply adress
-                    IF ($emailer->sendReply ($Phonebook['name'], $newvCard, $filename) == true) {    
-                        $i++;
-                    //    break 2;    // DEBUG - just send 1 email for tests purposes
-                    }
+					$x++;                                                      // possible n+1 new/additional numbers
+					$numbers[$x][0] = (string)$number['type'];
+					$numbers[$x][1] = $querynumber;
                 }
             }
         }
+		
+        IF (count ($numbers)) {                                                // one or more new numbers found
+			// fetch data
+		    $name    = $contact->person->realName;
+		    $email   = (string)$contact->telephony->services->email;
+	        $vip     = $contact->category;
+		    // assemble vCard from new entry(s)
+            $newvCard = $vCard->createVCard ($name, $numbers, $email, $vip);  
+            $filename = $name . '.vcf';
+            // send new entry as vCard to designated reply adress
+            IF ($emailer->sendReply ($Phonebook['name'], $newvCard, $filename) == true) {    
+                $i++;
+            }
+		}
     }
     return $i;
 }
