@@ -10,9 +10,9 @@ class mk_vCard
 
 {
 
-    public function createVCard ($number = '', $name = '', $type = '', $email = '', $vip = '') {
+    public function createVCard ($name = '', $numbers, $email = '', $vip = '') {
 
-        $newVCard = new VCard();
+		$newVCard = new VCard();
 
         $parts = explode (', ', $name);
             IF (count($parts) !== 2) {                     // name not separated by a comma ( obviously no first and last name) 
@@ -20,24 +20,27 @@ class mk_vCard
             }
             ELSE {
                 $newVCard->addName($parts[0], $parts[1]);  // realName separated in lastname, firstname
-            }    
-        switch ($type) {
-            case 'fax_work' :
-                $newVCard->addPhoneNumber($number, 'FAX');
-                break;
-            case 'mobile' :
-                $newVCard->addPhoneNumber($number, 'CELL');
-                break;
-            default :                                      // home & work
-                $newVCard->addPhoneNumber($number, strtoupper($type));
-                break;
-        }  
+            }
+	    foreach ($numbers as $number) {
+			switch ($number[0]) {
+				case 'fax_work' :
+					$newVCard->addPhoneNumber($number[1], 'FAX');
+					break;
+				case 'mobile' :
+					$newVCard->addPhoneNumber($number[1], 'CELL');
+					break;
+				default :                                   // home & work
+					$newVCard->addPhoneNumber($number[1], strtoupper($number[0]));
+					break;
+			}
+		}
         IF (!empty($email)) {
             $newVCard->addEmail($email);
         }
         IF ($vip == 1) {
             $newVCard->addNote("This contact was marked as important.\nSuggestion: assign to a VIP category or group.");  
-        }   
+        }
+		// echo $newVCard->get() . PHP_EOL;
         return $newVCard->get();   
     }
 }

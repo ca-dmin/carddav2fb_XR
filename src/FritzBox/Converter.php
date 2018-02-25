@@ -52,10 +52,7 @@ class Converter
 
     private function addPhone()
     {
-        // <telephony>
-        // 	<number type="work" vanity="" prio="1" id="0">+490358179022</number>
-        // 	<number type="work" vanity="" prio="0" id="1">+400746653254</number></telephony>
-		
+        
         $telephony = $this->contact->addChild('telephony');
 
         $replaceCharacters = $this->config['phoneReplaceCharacters'] ?? array();
@@ -98,9 +95,6 @@ class Converter
     
     private function addEmail()
     {
-        // <services>
-        // 	<email classifier="work" id="0">KTS.Michaelis.Hannover@evlka.de</email>
-        // 	<email classifier="work" id="1">Kindertagesstaette@michaelis-hannover.de</email></
 
         $services = $this->contact->addChild('services');
         $emailTypes = $this->config['emailTypes'] ?? array();

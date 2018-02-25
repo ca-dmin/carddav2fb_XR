@@ -2,6 +2,7 @@
 
 namespace Andig\Vcard;
 
+
 /**
  * VCard PHP Class to parse .vcard files.
  *
@@ -12,7 +13,10 @@ namespace Andig\Vcard;
  * Extended from https://github.com/jeroendesloovere/vcard
  * MIT License
  */
+
+ 
 class Parser implements \IteratorAggregate
+
 {
     /**
      * The raw VCard content.
@@ -315,4 +319,5 @@ class Parser implements \IteratorAggregate
     {
         return str_replace("\\n", PHP_EOL, $text);
     }
+	
 }

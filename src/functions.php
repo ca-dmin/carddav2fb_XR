@@ -7,6 +7,7 @@ use Andig\Vcard\Parser;
 use Andig\Vcard\mk_vCard;
 use Andig\FritzBox\Api;
 use Andig\FritzBox\Converter;
+use Andig\FritzBox\SOApi;
 use Andig\FritzAdr\converter2fa;
 use Andig\FritzAdr\fritzadr;
 use Andig\ReplyMail\replymail;
@@ -23,6 +24,12 @@ function backendProvider(array $config): Backend
 
     return $backend;
 }
+
+function getlastmodification (Backend $backend)
+{
+    return $backend->getModDate();
+}
+
 
 function download(Backend $backend, callable $callback=null): array
 {
@@ -200,24 +207,6 @@ EOT
 }
 
 
-function getSOAPclient($fb_ip = 'fritz.box', $user = 'dslf_config', $password = false) {
-    
-        $client = new \SoapClient(
-            null,
-            array(
-                'location'   => "http://".$fb_ip.":49000/upnp/control/x_contact",
-                'uri'        => "urn:dslforum-org:service:X_AVM-DE_OnTel:1",
-                'noroot'     => true,
-                'login'      => $user,
-                'password'   => $password,
-                'trace'      => true,
-                'exceptions' => true
-            )
-        );
-    return $client;
-}
-
-
 function exportFA($xml, string $dblocation) { 
     
     $convert2fa = new converter2fa();
@@ -242,58 +231,60 @@ function exportFA($xml, string $dblocation) {
 }
 
 
-function checkupdates ($xml_up, $config) {
+function downloadPhonebook ($config) {
     
-    // values from config for recursiv vCard assembling
     $Fritzbox  = $config['fritzbox'];
     $Phonebook = $config['phonebook'];
-    $Reply     = $config['reply'];
     
+    $fb_pb = new SOApi ($Fritzbox['url'], $Fritzbox['user'], $Fritzbox['password']);
+    return $fb_pb->getFBphonebook($Phonebook['id']);
+}
+
+
+function checkupdates ($xml_down, $xml_up, $config) {
+    
+    // values from config for recursiv vCard assembling
+    $Phonebook = $config['phonebook'];
+    $Reply     = $config['reply'];
+
     // set instance    
     $vCard   = new mk_vCard ();
     $emailer = new replymail ($Reply);
     
-	// set container variable
-	$numbers = array ();
-	
+    // set container variable
+    $numbers = array ();
+    
     // initialize return value
     $i = 0;
-    
-    // download phonebook from fritzbox
-    $client = getSoapClient($Fritzbox['url'], $Fritzbox['user'], $Fritzbox['password']);
-    $result = $client->GetPhonebook(new \SoapParam($Phonebook['id'],"NewPhonebookID"));
-    $xml_down = simplexml_load_file($result['NewPhonebookURL']);
-	
+        
     // check if entries are not included in the intended upload
     foreach ($xml_down->phonebook->contact as $contact) {
-		$x = -1;
-		$numbers = array ();                                                   // container for n-1 new numbers per contact
-		
+        $x = -1;
+        $numbers = array ();                                                   // container for n-1 new numbers per contact
         foreach ($contact->telephony->number as $number) {
             $querynumber = (string)$number;
             IF (strpos($querynumber, '**') === false) {                        // skip internal numbers
                 $querystr = '//telephony[number = "' .  $querynumber . '"]';   // assemble search string
                 IF (!$DataObjects = $xml_up->xpath($querystr)) {               // not found in upload = new entry! 
-					$x++;                                                      // possible n+1 new/additional numbers
-					$numbers[$x][0] = (string)$number['type'];
-					$numbers[$x][1] = $querynumber;
+                    $x++;                                                      // possible n+1 new/additional numbers
+                    $numbers[$x][0] = (string)$number['type'];
+                    $numbers[$x][1] = $querynumber;
                 }
             }
-        }
-		
+        }    
         IF (count ($numbers)) {                                                // one or more new numbers found
-			// fetch data
-		    $name    = $contact->person->realName;
-		    $email   = (string)$contact->telephony->services->email;
-	        $vip     = $contact->category;
-		    // assemble vCard from new entry(s)
+            // fetch data
+            $name    = $contact->person->realName;
+            $email   = (string)$contact->telephony->services->email;
+            $vip     = $contact->category;
+            // assemble vCard from new entry(s)
             $newvCard = $vCard->createVCard ($name, $numbers, $email, $vip);  
             $filename = $name . '.vcf';
             // send new entry as vCard to designated reply adress
             IF ($emailer->sendReply ($Phonebook['name'], $newvCard, $filename) == true) {    
                 $i++;
             }
-		}
+        }
     }
     return $i;
 }
@@ -330,5 +321,7 @@ function upload(string $xml, $config) {
 
     if (strpos($result, 'Das Telefonbuch der FRITZ!Box wurde wiederhergestellt') === false) {
         throw new \Exception('Upload failed');
+		return false;
     }
+	return true;
 }
