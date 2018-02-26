@@ -2,8 +2,8 @@
 
 $config = [
     'phonebook' => [
-        'id'           => 0,
-        'name'         => 'Telefonbuch',
+        'id'           => 0,                   // 0 is the first (standard phonebook) for test puposes use the next free ID...
+        'name'         => 'Telefonbuch',       // ... befor you overwrite/replace one of the existing phonebooks
 		'forcedupload' => 2,                   // 3 = CardDAV contacts overwrite phonebook on Fritz!Box
     ],                                         // 2 = like 3, but newer entries will send as VCF via eMail (-> reply)
                                                // 1 = like 2, but vCards are only downloaded if they are newer than the phonebook
@@ -31,9 +31,9 @@ $config = [
 	    'url'      => 'smtp...',
 		'port'     => 587,                     // alternativ 465
 		'secure'   => 'tls',                   // alternativ 'ssl'
-        'user'     => '',                      // your sender
+        'user'     => '',                      // your sender email adress e.g. account
         'password' => '',
-		'receiver' => '',
+		'receiver' => '',                      // your email adress
 		'debug'    => 2,                       // 0 = off (for production use)
 	],	                                       // 1 = client messages
 	    									   // 2 = client and server messages
@@ -64,7 +64,7 @@ $config = [
             ],
         ],
         'realName' => [
-            '{lastname}, {prefix} {nickname}',
+            '{lastname}, {prefix} {nickname}',        // are processed consecutively. Order decides!
             '{lastname}, {prefix} {firstname}',
             '{lastname}, {nickname}',
             '{lastname}, {firstname}',
