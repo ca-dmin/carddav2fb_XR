@@ -22,8 +22,8 @@ $config = [
     ],
 
 	'fritzbox' => [
-        'url'      => 'fritz.box',
-        'user'     => 'dslf-config',
+        'url'      => 'fritz.box',             // fritz.box or IP (typical 192.168.178.1)
+        'user'     => 'dslf-config',           // e.g. dslf-config AVM standard user for usual login
         'password' => '',
     ],
 
@@ -40,7 +40,7 @@ $config = [
 
 
     'fritzadrpath' => [                      // if not empty FRITZadr Database will be written to this location
-        '../FritzAdr.dbf'
+        '../FritzAdr.dbf'                    // please consider to have a compiled dBase modul added to your php installation 
     ],
  
     'filters' => [
@@ -53,7 +53,7 @@ $config = [
 				'B',
 				'C',
             ],
-		    'groups'     => [
+		    'group'     => [
 			],
         ],
     ],
