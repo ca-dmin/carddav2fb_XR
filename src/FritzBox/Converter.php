@@ -56,39 +56,41 @@ class Converter
         $telephony = $this->contact->addChild('telephony');
 
         $replaceCharacters = $this->config['phoneReplaceCharacters'] ?? array();
-        $phoneTypes = $this->config['phoneTypes'] ?? array();
+        $phoneTypes = $this->config['phoneTypes'] ?? array(); 
 
         if (isset($this->card->phone)) {
+			$idnum = -1;
             foreach ($this->card->phone as $numberType => $numbers) {
                 foreach ($numbers as $idx => $number) {
+					$idnum++;
                     if (count($replaceCharacters)) {
-						//VP: Umwandlung HTML char in Leerzeichen (better trim)
 						$number = str_replace("\xc2\xa0", "\x20", $number);
-						// end of extension
 						$number = strtr($number, $replaceCharacters);
 						$number = trim(preg_replace('/\s+/','', $number));
 					}
                     $phone = $telephony->addChild('number', $number);
-                    $phone->addAttribute('id', $idx);
-                    $type = 'other';
-
-                    foreach ($phoneTypes as $type => $value) {
-						if (strpos($numberType, $type) !== false) {
-                            $type = $value;
-                            if (strpos($numberType, 'FAX') !== false) {
-								$type = 'fax_' . $type;
-						    }
-                            break;
-                        }
+                    $phone->addAttribute('id', $idnum);
+                    
+					$type = 'other';
+					$numberType = strtolower ($numberType);
+                    
+					IF (stripos($numberType, 'fax') !== false) {
+						$type = 'fax_work';
 					}
+					ELSE {
+					    foreach ($phoneTypes as $type => $value) {
+						    if (stripos($numberType, $type) !== false) {
+                               $type = $value;
+							   break;
+						    }
+						}
+					}
+					$phone->addAttribute('type', $type);
 				}
-					
-                $phone->addAttribute('type', $type);
-
                 if (strpos($numberType, 'pref') !== false) {
                     $phone->addAttribute('prio', 1);
-					}
-                    // $phone->addAttribute('vanity', '');
+				}
+             // $phone->addAttribute('vanity', '');
             }
         }
     }
