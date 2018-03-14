@@ -72,11 +72,11 @@ $config = [
             '{fullname}'
         ],
 		
-        'phoneTypes' => [
-            'WORK'    => 'work',
-            'HOME'    => 'home',
-            'CELL'    => 'mobile',
-            'MAIN'    => 'work',
+        'phoneTypes' => [                             // you mustn´t define 'fax' - this conversion is set fix in code
+            'work'    => 'work',
+            'home'    => 'home',
+            'cell'    => 'mobile',
+            'main'    => 'work',
             'default' => 'work',
             'other'   => 'work'
         ],
