@@ -262,7 +262,14 @@ class Parser implements \IteratorAggregate
                         break;
 					/* User extended attributes for FritzBox*/
 					case 'X-FB_QUICKDIAL':
-                        $cardData->xquickdial = $value;
+					    if ($value >= 0 && $value <= 99) {
+                            $cardData->xquickdial = $value;
+						}
+                        break;
+					case 'X-FB_VANITY':
+					    if (ctype_alpha($value)) {
+                            $cardData->xvanity = substr (strtoupper($value), 0, 8);
+						}
                         break;
                 }
             }
