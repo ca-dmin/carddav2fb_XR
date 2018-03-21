@@ -8,6 +8,7 @@ My changes or additions to andigs version are:
 
   * the phone book can be built from more than one source
   * befor upload (overwriting) the phonebook there is a check for newer data on the Fritz!Box. If so, you will receive an email with the vcf-file of this contact
+  * quick dail numbers can be handled - it´s a little bit difficult, so see wiki for more detailed explanation
   * FAX numbers of selected contacts can be written as FritzAdr.dbf file for Fritz!FAX (fax4box)
   * the parser file has been added to include nicknames (now also included in andig´s solution)
   * the config example file was supplemented with recommendable default values (now also included in andig´s solution)
