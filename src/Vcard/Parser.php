@@ -248,6 +248,9 @@ class Parser implements \IteratorAggregate
                         $cardData->uid = $value;
                         break;
                     /* iCloud extended attributes */
+					case 'X-MAIDENNAME':
+                        $cardData->xmaidenname = $value;
+                        break;
                     case 'X-ADDRESSBOOKSERVER-KIND':
                         $cardData->xabskind = $value;
                         break;
@@ -256,6 +259,10 @@ class Parser implements \IteratorAggregate
                             $cardData->xabsmember = [];
                         }
                         $cardData->xabsmember[] = preg_replace('/^urn:uuid:/', '', $value);
+                        break;
+					/* User extended attributes for FritzBox*/
+					case 'X-FB_QUICKDIAL':
+                        $cardData->xquickdial = $value;
                         break;
                 }
             }
