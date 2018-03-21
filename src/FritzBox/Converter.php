@@ -9,10 +9,12 @@ class Converter
 {
 	
     private $config;
+	private $unique_quickdial = array();
 
     public function __construct($config)
     {
         $this->config = $config;
+		unset ($unique_quickdial);
     }
 
     public function convert($card): SimpleXMLElement
@@ -89,6 +91,16 @@ class Converter
 				}
                 if (strpos($numberType, 'pref') !== false) {
                     $phone->addAttribute('prio', 1);
+				}
+				if (isset ($this->card->xquickdial)) {
+					if (!in_array ($this->card->xquickdial,$this->unique_quickdial)) {    // quick dial number really unique?
+						if ((strpos($numberType, 'pref') !== false) 
+							&& ($this->card->xquickdial >= 0 && $this->card->xquickdial <= 99)) {  
+					        $phone->addAttribute('quickdial', $this->card->xquickdial);
+				            $this->unique_quickdial[] = $this->card->xquickdial;    // keep quick dial number for cross checks
+						    unset ($this->card->xquickdial);                  // flush used quick dial number
+						}
+				    }
 				}
              // $phone->addAttribute('vanity', '');
             }
