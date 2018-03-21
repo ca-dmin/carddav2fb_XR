@@ -10,11 +10,13 @@ class Converter
 	
     private $config;
 	private $unique_quickdial = array();
+	private $unique_vanity = array();
 
     public function __construct($config)
     {
         $this->config = $config;
 		unset ($unique_quickdial);
+		unset ($unique_vanity);
     }
 
     public function convert($card): SimpleXMLElement
@@ -93,16 +95,23 @@ class Converter
                     $phone->addAttribute('prio', 1);
 				}
 				if (isset ($this->card->xquickdial)) {
-					if (!in_array ($this->card->xquickdial,$this->unique_quickdial)) {    // quick dial number really unique?
-						if ((strpos($numberType, 'pref') !== false) 
-							&& ($this->card->xquickdial >= 0 && $this->card->xquickdial <= 99)) {  
+					if (!in_array ($this->card->xquickdial, $this->unique_quickdial)) {    // quick dial number really unique?
+						if (strpos($numberType, 'pref') !== false) {  
 					        $phone->addAttribute('quickdial', $this->card->xquickdial);
 				            $this->unique_quickdial[] = $this->card->xquickdial;    // keep quick dial number for cross checks
-						    unset ($this->card->xquickdial);                  // flush used quick dial number
+						    unset ($this->card->xquickdial);                        // flush used quick dial number
 						}
 				    }
 				}
-             // $phone->addAttribute('vanity', '');
+				if (isset ($this->card->xvanity)) {
+					if (!in_array ($this->card->xvanity, $this->unique_vanity)) {   // vanity number really unique?
+						if (strpos($numberType, 'pref') !== false) {  
+					        $phone->addAttribute('vanity', $this->card->xvanity);
+				            $this->unique_vanity[] = $this->card->xvanity;          // keep vanity number for cross checks
+						    unset ($this->card->xvanity);                           // flush used vanity number
+						}
+				    }
+				}
             }
         }
     }
