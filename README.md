@@ -15,7 +15,7 @@ My changes or additions to andigs version are:
 
 ## Requirements
 
-  * PHP 7.0 (`apt-get install php7.0 php7.0-cli php7.0-curl php7.0-mbstring php7.0-soap php7.0-xml`)
+  * PHP 7.0 (`apt-get install php7.0 php7.0-cli php7.0-curl php7.0-gd php7.0-mbstring php7.0-soap php7.0-xml`)
   * Composer (follow the installation guide at https://getcomposer.org/download/)
   * if you want to write a FritzAdr.dbf: dBase library for php 7.0
 
