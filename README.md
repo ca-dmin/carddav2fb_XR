@@ -6,7 +6,7 @@ This is an extendeded version of https://github.com/andig/carddav2fb. That parti
 
 My changes or additions to andigs version are:
 
-  * profile images can be uploaded in addition to the phone book
+  * profile images can be uploaded in addition to the phone book (see wiki for the handling)
   * quick dail and vanity numbers can be considered (see wiki for the handling)
   * befor upload (overwriting) the phonebook there is a check for newer data on the Fritz!Box. If so, you will receive an email with the vcf-file of this contact
   * FAX numbers of selected contacts can be written as FritzAdr.dbf file for Fritz!FAX (fax4box)
