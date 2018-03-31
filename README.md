@@ -6,10 +6,11 @@ This is an extendeded version of https://github.com/andig/carddav2fb. That parti
 
 My changes or additions to andigs version are:
 
-  * the phone book can be built from more than one source
+  * profile images can be uploaded in addition to the phone book
+  * quick dail and vanity numbers can be considered (see wiki for the handling)
   * befor upload (overwriting) the phonebook there is a check for newer data on the Fritz!Box. If so, you will receive an email with the vcf-file of this contact
-  * quick dail numbers can be handled - it´s a little bit difficult, so see wiki for more detailed explanation
   * FAX numbers of selected contacts can be written as FritzAdr.dbf file for Fritz!FAX (fax4box)
+  * the phone book can be built from more than one source (now also included in andig´s solution)
   * the parser file has been added to include nicknames (now also included in andig´s solution)
   * the config example file was supplemented with recommendable default values (now also included in andig´s solution)
 
@@ -25,7 +26,6 @@ Install carddav2fb:
 
     cd /
     git clone https://github.com/BlackSenator/carddav2fb_XR.git
-    sudo mv carddav2fb_XR carddav2fb
     cd carddav2fb
     
 Install composer (see https://getcomposer.org/download/ for newer instructions):
@@ -67,13 +67,21 @@ Edit `config.example.php` and save as `config.php` or use an other name of your 
 
 ## Usage
 
-List all commands:
-
-    php carddav2fb.php run -h
-
 Complete processing:
 
     php carddav2fb.php run
+
+Or, if you want to upload profil images:
+
+    php carddav2fb.php run
+
+If you want to use a different name for the configuration file instead of config.php:
+
+    php carddav2fb.php run -c different_conf.php
+
+List all commands:
+
+    php carddav2fb.php run -h
 
 Get help for a command:
 

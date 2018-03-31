@@ -170,20 +170,6 @@ class Parser implements \IteratorAggregate
                 }
 
                 switch (strtoupper($element)) {
-                    case 'FN':
-                        $cardData->fullname = $value;
-                        break;
-                    case 'N':
-                        foreach ($this->parseName($value) as $key => $val) {
-                            $cardData->{$key} = $val;
-                        }
-                        break;
-                    case 'NICKNAME':
-                        $cardData->nickname = $value;
-                        break;
-                    case 'BDAY':
-                        $cardData->birthday = $this->parseBirthday($value);
-                        break;
                     case 'ADR':
                         if (!isset($cardData->address)) {
                             $cardData->address = [];
@@ -191,12 +177,29 @@ class Parser implements \IteratorAggregate
                         $key = !empty($types) ? implode(';', $types) : 'WORK;POSTAL';
                         $cardData->address[$key][] = $this->parseAddress($value);
                         break;
-                    case 'TEL':
-                        if (!isset($cardData->phone)) {
-                            $cardData->phone = [];
-                        }
-                        $key = !empty($types) ? implode(';', $types) : 'default';
-                        $cardData->phone[$key][] = $value;
+                    case 'AGENT':          // up to version 3.0 
+                        $cardData->agent = $value;
+                        break;
+                    case 'ANNIVERSARY':    // from version 4.0
+                        $cardData->anniversary = $value;
+                        break;
+                    case 'BDAY':
+                        $cardData->birthday = $this->parseBirthday($value);
+                        break;
+                    case 'CALADRURI':      // from version 4.0
+                        $cardData->caladruri = $value;
+                        break;
+                    case 'CALURI':         // from version 4.0
+                        $cardData->caluri = $value;
+                        break;
+                    case 'CATEGORIES':
+                        $cardData->categories = array_map('trim', explode(',', $value));
+                        break;
+                    case 'CLASS':          // only version 3.0
+                        $cardData->class = $value;
+                        break;
+                    case 'CLIENTPIDMAP':   // from version 4.0
+                        $cardData->clientpidmap = $value;
                         break;
                     case 'EMAIL':
                         if (!isset($cardData->email)) {
@@ -205,14 +208,116 @@ class Parser implements \IteratorAggregate
                         $key = !empty($types) ? implode(';', $types) : 'default';
                         $cardData->email[$key][] = $value;
                         break;
-                    case 'REV':
-                        $cardData->revision = $value;
+                    case 'FBURL':          // from version 4.0
+                        $cardData->fburl = $value;
                         break;
-                    case 'VERSION':
-                        $cardData->version = $value;
+                    case 'FN':             // mandatory from version 3.0! Formatted string with the full name
+                        $cardData->fullname = $value;
+                        break;
+                    case 'GENDER':         // from version 4.0
+                        $cardData->gender = $value;
+                        break;
+                    case 'GEO':
+                        $cardData->geo = $value;
+                        break;
+                    case 'IMPP':           // from version 3.0
+                        $cardData->impp = $value;
+                        break;
+                    case 'KEY':
+                        $cardData->key = $value;
+                        break;
+                    case 'KIND':           // from version 4.0
+                        $cardData->kind = $value;
+                        break;
+                    case 'LABEL':          // up to version 3.0
+                        $cardData->label = $this->unescape($value);;
+                        break;
+                    case 'LANG':           // from version 4.0
+                        $cardData->lang = $value;
+                        break;
+                    case 'LOGO':
+                        if ($rawValue) {
+                            $cardData->rawLogo = $value;
+                            $cardData->logoData = implode(';',$types);
+                        } else {
+                            $cardData->logo = $value;
+                        }
+                        break;
+                    case 'MAILER':         // up to version 3.0
+                        $cardData->mailer = $value;
+                        break;
+                    case 'MEMBER':         // from version 4.0
+                        $cardData->member = $value;
+                        break;
+                    case 'N':              // mandtory up to version 3.0! Textured components of the personal name
+                        foreach ($this->parseName($value) as $key => $val) {
+                            $cardData->{$key} = $val;
+                        }
+                        break;
+                    case 'NAME':           // nur version 3.0! Textual representation of the 'SOURCE' property
+                        $cardData->name = $value;
+                        break;
+                    case 'NICKNAME':       // from version 3.0
+                        $cardData->nickname = $value;
+                        break;
+                    case 'NOTE':
+                        $cardData->note = $this->unescape($value);
                         break;
                     case 'ORG':
                         $cardData->organization = $value;
+                        break;
+                    case 'PHOTO':
+                        if ($rawValue) {
+                            $cardData->rawPhoto = $value;
+                            $cardData->photoData = implode(';',$types);
+                        } else {
+                            $cardData->photo = $value;
+                        }
+                        break;
+                    case 'PRODID':         // from version 3.0! Identifier for the product that created the vCard object
+                        $cardData->prodid = $value;
+                        break;
+                    case 'PROFILE':        // up to version 3.0! Specifies that the vCard is a vCard: "PROFILE: VCARD"
+                        $cardData->profile = $value;
+                        break;
+                    case 'RELATED':        // from version 4.0! Other unit to which the person has connection
+                        $cardData->related = $value;
+                        break;
+                    case 'REV':            // timestamp of the last update of the vCard
+                        $cardData->revision = $value;
+                        break;
+                    case 'ROLE':
+                        $cardData->role = $value;
+                        break;
+                    case 'SORT-STRING':        // up to version 3.0
+                        $cardData->sortstring = $value;
+                        break;
+                    case 'SOUND':
+                        if ($rawValue) {
+                            $cardData->rawSound = $value;
+                            $cardData->soundData = implode(';',$types);
+                        } else {
+                            $cardData->sound = $value;
+                        }
+                        break;
+                    case 'SOURCE':
+                        $cardData->source = $value;
+                        break;
+                    case 'TEL':
+                        if (!isset($cardData->phone)) {
+                            $cardData->phone = [];
+                        }
+                        $key = !empty($types) ? implode(';', $types) : 'default';
+                        $cardData->phone[$key][] = $value;
+                        break;
+                    case 'TITLE':
+                        $cardData->title = $value;
+                        break;
+                    case 'TZ':
+                        $cardData->tz = $value;
+                        break;
+                    case 'UID':
+                        $cardData->uid = $value;
                         break;
                     case 'URL':
                         if (!isset($cardData->url)) {
@@ -221,34 +326,48 @@ class Parser implements \IteratorAggregate
                         $key = !empty($types) ? implode(';', $types) : 'default';
                         $cardData->url[$key][] = $value;
                         break;
-                    case 'TITLE':
-                        $cardData->title = $value;
+                    case 'VERSION':        // mandatoryd! From version 3.0 has to follow this to the BEGIN property
+                        $cardData->version = $value;
                         break;
-                    case 'PHOTO':
-                        if ($rawValue) {
-                            $cardData->rawPhoto = $value;
-                        } else {
-                            $cardData->photo = $value;
+                    case 'XML':            // from version 4.0
+                        $cardData->xml = $value;
+                        break;
+                    /* extended attributes references to RFC 6474 and RFC 6715 */
+                    case 'BIRTHPLACE':
+                        $cardData->birthplace = $value;
+                        break;
+                    case 'DEATHDATE':
+                        $cardData->deathdate = $value;
+                        break;
+                    case 'DEATHPLACE':
+                        $cardData->deathplace = $value;
+                        break;
+                    case 'EXPERTISE':
+                        if (!isset($cardData->expertise)) {
+                            $cardData->expertise = [];
                         }
+                        $key = !empty($types) ? implode(';', $types) : 'default';
+                        $cardData->expertise[$key][] = $value;
                         break;
-                    case 'LOGO':
-                        if ($rawValue) {
-                            $cardData->rawLogo = $value;
-                        } else {
-                            $cardData->logo = $value;
+                    case 'HOBBY':
+                        if (!isset($cardData->hobby)) {
+                            $cardData->hobby = [];
                         }
+                        $key = !empty($types) ? implode(';', $types) : 'default';
+                        $cardData->hobby[$key][] = $value;
                         break;
-                    case 'NOTE':
-                        $cardData->note = $this->unescape($value);
+                    case 'INTEREST':
+                        if (!isset($cardData->interest)) {
+                            $cardData->interest = [];
+                        }
+                        $key = !empty($types) ? implode(';', $types) : 'default';
+                        $cardData->interest[$key][] = $value;
                         break;
-                    case 'CATEGORIES':
-                        $cardData->categories = array_map('trim', explode(',', $value));
-                        break;
-                    case 'UID':
-                        $cardData->uid = $value;
+                    case 'ORG-DIRECTORY':
+                        $cardData->orgdirectory = $value;
                         break;
                     /* iCloud extended attributes */
-					case 'X-MAIDENNAME':
+                    case 'X-MAIDENNAME':
                         $cardData->xmaidenname = $value;
                         break;
                     case 'X-ADDRESSBOOKSERVER-KIND':
@@ -260,16 +379,16 @@ class Parser implements \IteratorAggregate
                         }
                         $cardData->xabsmember[] = preg_replace('/^urn:uuid:/', '', $value);
                         break;
-					/* User extended attributes for FritzBox*/
-					case 'X-FB_QUICKDIAL':
-					    if ($value >= 0 && $value <= 99) {
-                            $cardData->xquickdial = $value;
-						}
+                    /* User extended attributes for FritzBox*/
+                    case 'X-FB_QUICKDIAL':
+                        if ($value >= 0 && $value <= 99) {
+                            $cardData->xquickdial =  $value;
+                        }
                         break;
-					case 'X-FB_VANITY':
-					    if (ctype_alpha($value)) {
+                    case 'X-FB_VANITY':
+                        if (ctype_alpha($value)) {
                             $cardData->xvanity = substr (strtoupper($value), 0, 8);
-						}
+                        }
                         break;
                 }
             }
@@ -333,5 +452,5 @@ class Parser implements \IteratorAggregate
     {
         return str_replace("\\n", PHP_EOL, $text);
     }
-	
+    
 }

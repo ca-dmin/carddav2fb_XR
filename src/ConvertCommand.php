@@ -47,12 +47,12 @@ class ConvertCommand extends Command
         $conversions = $this->config['conversions'];
         $xml = export($phonebook['name'], $filtered, $conversions);
 
-		// FRITZadr dBase Ausgabe
-		$FritzAdrPath = $this->config['fritzadrpath'][0];
-		IF (!empty($FritzAdrPath)) {
-			$FAData = exportfa($filtered, $conversions, $FritzAdrPath);
-			Echo $FAData;
-		}	
+        // FRITZadr dBase Ausgabe
+        $FritzAdrPath = $this->config['fritzadrpath'][0];
+        IF (!empty($FritzAdrPath)) {
+            $FAData = exportfa($filtered, $conversions, $FritzAdrPath);
+            Echo $FAData;
+        }   
 
         echo $xml->asXML();
     }
