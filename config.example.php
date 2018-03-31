@@ -1,93 +1,112 @@
 <?php
 
 $config = [
-    'phonebook' => [
-        'id'           => 0,                   // 0 is the first (standard phonebook) for test puposes use the next free ID...
-        'name'         => 'Telefonbuch',       // ... befor you overwrite/replace one of the existing phonebooks
-		'forcedupload' => 2,                   // 3 = CardDAV contacts overwrite phonebook on Fritz!Box
-    ],                                         // 2 = like 3, but newer entries will send as VCF via eMail (-> reply)
-                                               // 1 = like 2, but vCards are only downloaded if they are newer than the phonebook
-	
+    
+    'script' => [
+        'cache' => '/media/[YOURUSBSTICK]/carddav2fb/cache',        // your stick, drive or share designated for caching 
+        'log'   => '/media/[YOURUSBSTICK]/carddav2fb/cache',        // at you Raspberry, on your NAS or ...
+    ], 
+
     'server' => [
         [
-            'url'      => 'https://...',
-            'user'     => '',
-            'password' => '',
-            ],                                 /* define as many as you need
+            'url'      => 'https://..',
+            'user'     => '[ACCOUNT]',
+            'password' => '[PASSWORD]',
+            ],                                                      /* define as many as you need   
         [
-            'url'      => '',
+            'url'      => 'https://..',
             'user'     => '',
             'password' => '',
-            ],                                 */
+            ],                                                      */
     ],
 
-	'fritzbox' => [
-        'url'      => 'fritz.box',             // fritz.box or IP (typical 192.168.178.1)
-        'user'     => 'dslf-config',           // e.g. dslf-config AVM standard user for usual login
-        'password' => '',
+    'fritzbox' => [
+        'url'      => 'fritz.box',
+        'user'     => '[USER]',                                     // e.g. 'dslf-config' AVM standard user for usual login
+        'password' => '[PASSWORD]',
+        'fonpix'   => '/[YOURUSBSTICK]/FRITZ/fonpix',               // the additional usb memory at the Fritz! box
+        'fritzadr' => '/media/fritzbox/FRITZ/mediabox/FritzAdr.dbf'    // a mounted storage; if not empty FRITZadr Database
+                                                                    // will be written to this location
+                                                                    // (will be changed to ftp soon)
     ],
 
-    'reply' => [
-	    'url'      => 'smtp...',
-		'port'     => 587,                     // alternativ 465
-		'secure'   => 'tls',                   // alternativ 'ssl'
-        'user'     => '',                      // your sender email adress e.g. account
-        'password' => '',
-		'receiver' => '',                      // your email adress
-		'debug'    => 2,                       // 0 = off (for production use)
-	],	                                       // 1 = client messages
-	    									   // 2 = client and server messages
+    'phonebook' => [
+        'id'           => 0,               // only '0' can store quick dial and vanity numbers as well as images 
+        'name'         => 'Telefonbuch',
+        'imagepath'    => 'file:///var/InternerSpeicher/FRITZSTICK/FRITZ/fonpix/', // mandatory if you use the -i option
+        'forcedupload' => 3,               // 3 = CardDAV contacts overwrite phonebook on Fritz!Box
+    ],                                     // 2 = like 3, but newer entries will send as VCF via eMail (-> reply)
+                                           // 1 = like 2, but vCards are only downloaded if they are newer than the phonebook
 
-
-    'fritzadrpath' => [                      // if not empty FRITZadr Database will be written to this location
-        '../FritzAdr.dbf'                    // please consider to have a compiled dBase modul added to your php installation 
+    'reply' => [                                                    // mandatory if you use "forcedupload" < 3 ! 
+        'url'      => 'smtp...',
+        'port'     => 587,                                          // alternativ 465
+        'secure'   => 'tls',                                        // alternativ 'ssl'
+        'user'     => '[USER]',                                     // your sender email adress e.g. account
+        'password' => '[PASSWORD]',
+        'receiver' => 'volker.pueschel@anasco.de',                  // your email adress to receive the secured contacts  
+        'debug'    => 0,                                            // 0 = off (for production use)
+                                                                    // 1 = client messages
+                                                                    // 2 = client and server messages
     ],
- 
+
     'filters' => [
-        'include' => [                         // if empty include all by default
+        'include' => [                                              /* if empty include all by default
+            'categories' => [                                          if your server is iCloud, groups can be used (XOR)
+            ],
+            'group' => [
+            ],                                                      */
         ],
 
         'exclude' => [
             'categories' => [
-			    'A',
-				'B',
-				'C',
-            ],
-		    'group'     => [
-			],
+                'A',
+                'B',
+                'C',
+            ],                                                      /*
+            'group' => [                                               if your server is iCloud, groups can be used (XOR)
+                'D',
+                'E',
+                'F',
+            ],                                                      */
         ],
-    ],
 
     'conversions' => [
+        
+        'substitutes' => [                                          // you must not change this! 
+            'PHOTO',                                                // Otherwise image upload failed!
+        ],        
+        
         'vip' => [
-            'categories' => ['VIP'
+            'categories' => ['VIP'                                  // the category / categories, which should be marked as VIP
             ],
         ],
-        'realName' => [
-            '{lastname}, {prefix} {nickname}',        // are processed consecutively. Order decides!
+        
+        'realName' => [                                             // are processed consecutively. Order decides!
+            '{lastname}, {prefix} {nickname}',
             '{lastname}, {prefix} {firstname}',
             '{lastname}, {nickname}',
             '{lastname}, {firstname}',
             '{organization}',
             '{fullname}'
         ],
-		
-        'phoneTypes' => [                             // you mustn´t define 'fax' - this conversion is set fix in code
-            'work'    => 'work',
-            'home'    => 'home',
-            'cell'    => 'mobile',
-            'main'    => 'work',
+
+        'phoneTypes' => [                                           // you mustn´t define 'fax'!
+            'WORK'    => 'work',                                    // this conversion is set fix in code!
+            'HOME'    => 'home',
+            'CELL'    => 'mobile',
+            'MAIN'    => 'work',
+            'FAX'     => 'fax',
             'default' => 'work',
-            'other'   => 'work'
         ],
-		
+
         'emailTypes' => [
             'WORK' => 'work',
             'HOME' => 'home'
         ],
-		
-        'phoneReplaceCharacters' => [  // are processed consecutively. Order decides!
-            '+491'  => '01',           // domestic numbers without country code 
+        
+        'phoneReplaceCharacters' => [                               // are processed consecutively. Order decides!
+            '+491'  => '01',                                        // domestic numbers without country code
             '+492'  => '02',
             '+493'  => '03',
             '+494'  => '04',
@@ -106,11 +125,11 @@ $config = [
             '+49 8' => '08',
             '+49 9' => '09',
             '+49'   => '',
-            '('     => '',             // delete separator
+            '('     => '',                                          // delete separators
             ')'     => '',
             '/'     => '',
             '-'     => '',
-            '+'     => '00'            // normalize foreign numbers
+            '+'     => '00'                                         // normalize foreign numbers
         ]
     ]
 ];
