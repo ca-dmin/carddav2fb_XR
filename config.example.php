@@ -33,7 +33,7 @@ $config = [
     'phonebook' => [
         'id'           => 0,               // only '0' can store quick dial and vanity numbers as well as images 
         'name'         => 'Telefonbuch',
-        'imagepath'    => 'file:///var/InternerSpeicher/FRITZSTICK/FRITZ/fonpix/', // mandatory if you use the -i option
+        'imagepath'    => 'file:///var/InternerSpeicher/[YOURUSBSTICK]/FRITZ/fonpix/', // mandatory if you use the -i option
         'forcedupload' => 3,               // 3 = CardDAV contacts overwrite phonebook on Fritz!Box
     ],                                     // 2 = like 3, but newer entries will send as VCF via eMail (-> reply)
                                            // 1 = like 2, but vCards are only downloaded if they are newer than the phonebook
