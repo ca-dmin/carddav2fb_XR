@@ -40,6 +40,48 @@ function download(Backend $backend, $substitutes, callable $callback=null): arra
 }
 
 
+/**
+ * Download images from CardDAV server
+ *
+ * @param array $cards
+ * @return int
+ */
+function downloadImages(Backend $backend, array $cards, callable $callback=null): array
+{
+    foreach ($cards as $card) {
+        if (isset($card->photo)) {
+            $uri = $card->photo;
+            $image = $backend->fetchImage($uri);
+            $card->photo_data = utf8_encode($image);
+
+            if (is_callable($callback)) {
+                $callback();
+            }
+        }
+    }
+
+    return $cards;
+}
+
+/**
+ * Count downloaded images contained in list of vcards
+ *
+ * @param array $cards
+ * @return int
+ */
+function countImages(array $cards): int
+{
+    $images = 0;
+
+    foreach ($cards as $card) {
+        if (isset($card->photo_data)) {
+            $images++;
+        }
+    }
+
+    return $images;
+}
+
 function getImageCachePath ($cachePath = '') {
     
     $imageCache = $cachePath . '/fonpix';                              // ../[cache]/fonpix
