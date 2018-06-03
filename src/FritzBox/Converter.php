@@ -37,6 +37,8 @@ class Converter
         // add Person
         $person = $this->contact->addChild('person');
         $name = htmlspecialchars($this->getProperty('realName'));
+        // replace ";" at end of string, this happens with company names 
+        $name = preg_replace('/\;$/', '', $name);
         $person->addChild('realName', $name);
         
         // add photo
