@@ -70,7 +70,8 @@ $config = [
                 'F',
             ],                                                      */
         ],
-
+    ],
+    
     'conversions' => [
         
         'substitutes' => [                                          // you must not change this! 
