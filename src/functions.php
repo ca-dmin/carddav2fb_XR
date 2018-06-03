@@ -115,7 +115,7 @@ function storeImages(array $vcards, $cachePath = '')
     foreach ($vcards as $vcard) {
         if (isset($vcard->rawPhoto)) {                                 // skip all other vCards
             if (!in_array($vcard->uid . '.jpg', $cachedFiles)) {       // this UID has recently no file in cache
-                if ($vcard->photoData == 'JPEG') {                     // Fritz!Box only accept jpg-files
+                if (stripos($vcard->photoData, 'jpeg') !== false) {  // Fritz!Box only accept jpg-files
                     $imgFile = imagecreatefromstring ($vcard->rawPhoto);
                     if ($imgFile !== false) {
                         $fullPath = $imageCache . '/' . $vcard->uid . '.jpg';
