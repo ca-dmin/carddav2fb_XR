@@ -134,7 +134,7 @@ function storeImages(array $vcards, $cachePath = '')
 
 function uploadImages ($new_files, $config)
 {
-    $conn_id = ftp_connect($config['url']);
+    $conn_id = ftp_connect(str_replace('http://', '', $config['url']));
     $result = ftp_login($conn_id, $config['user'], $config['password']);
     $i = 0;
     
